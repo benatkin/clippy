@@ -1,0 +1,19 @@
+{
+  "name": "clippy",
+  "author": {
+    "name": "Ben Atkin",
+    "email": "ben@benatkin.com",
+    "url": "http://benatkin.com/"
+  },
+  "description": "a CLI library for filters",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benatkin/clippy.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "node -e 'require(\"./test\").run()'"
+  }
+}
