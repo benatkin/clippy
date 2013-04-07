@@ -7,30 +7,95 @@ A cli library for filters, which takes care of reading and writing the data.
 bin.js:
 
 ``` javascript
-require('./cli').run();
+require('clippy').run(require('./cli'));
 ```
 
 cli.js:
 
 ``` javascript
 module.exports = {
-  "init": function() {
-    this.clippy = require('clippy');
-    this._ready = true;
-  },
-  "process": function() {
-    // double-space the output
-    this.output = this.input.split("\n").join("\n\n");
-    this.done();
+  "config": {
+    "input": "text",
+    "output": "text",
+    "stream": false
   },
   "run": function() {
-    if (! this._ready) {
-      this.init();
-    }
-    this.clippy(this);
+    this.output = this.input.replace('baz', 'quux');
   }
 }
 ```
+
+Running it:
+
+```
+$ echo 'baz' | node bin.js
+quux
+$ echo 'baz' > metasyntactic.txt
+$ node bin.js metasyntactic.txt
+quux
+$ node bin.js metasyntactic.txt -o output.txt
+$ cat output.txt
+quux
+$ node bin.js --help
+usage: node bin.js [-f input-file] ... [-o output-file] [input-file] ...
+
+options:
+  -f, --input-file   the input file(s)
+  -o, --output-file  the output file
+  --help             print this usage message
+$
+```
+
+Since `config.args` isn't specified, it uses the arguments as input file(s).
+
+# command-line arguments and async
+
+`cli.js`:
+
+``` javascript
+module.exports = {
+  "config": {
+    "output": "json",
+    "args": {
+      "url": "a URL to retrieve JSON data from"
+    },
+    "forms": ["url"]
+  },
+  "run": function(done) {
+    var request = require('request');
+    request.get({url: this.args.url, json: true}, (error, response, body) {
+      this.output = body;
+      done();
+    });
+  }
+}
+```
+
+Running this (keeping the same `bin.js` as before:
+
+```
+$ node bin.js http://jsonip.com/
+{
+  "ip": "63.253.110.74",
+  "about": "/about",
+  "Pro!": "http://getjsonip.com"
+}
+$ node bin.js --help
+usage: node bin.js [-o output-file] url
+
+arguments:
+  url  a URL to retrieve JSON data from
+
+options:
+  -o, --output-file  the output file
+  --pretty-print     pretty print the JSON (default)
+  --no-pretty-print  turn off pretty printing
+  --help             print this usage message
+```
+
+Note that this added pretty-printing. This interface is intended to map more
+closely to HTTP than traditional CLI libraries. The output format maps loosely
+to content-type.
 
 # License (MIT)
 
