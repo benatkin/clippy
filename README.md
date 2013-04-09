@@ -1,6 +1,7 @@
 # clippy
 
-A cli library for filters, which takes care of reading and writing the data.
+A cli library, which takes care of reading and writing data, in
+plain text or JSON. Uses [JSON-structured JavaScript](https://github.com/benatkin/js2json).
 
 # synopsis
 
